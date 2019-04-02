@@ -1,0 +1,17 @@
+{{define "layout"}}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>{{.PageName}} | go grpc microservice example</title>
+    <link rel="stylesheet" type="text/css" media="all" href="/static/css/style.css">
+</head>
+<body class="app">
+<div class="app__main" id="appMain">
+    {{template "header" . }}
+    {{template "content" . }}
+</div>
+</body>
+</html>
+{{end}}

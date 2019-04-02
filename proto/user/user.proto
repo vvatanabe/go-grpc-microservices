@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "github.com/vvatanabe/go-grpc-microservices/proto/user";
+
+import "google/protobuf/timestamp.proto";
+
+message User {
+    uint64 id = 1;
+    string email = 2;
+    bytes password_hash = 3;
+    google.protobuf.Timestamp created_at = 4;
+}
+
+message CreateUserRequest {
+    string email = 1;
+    bytes password = 2;
+}
+
+message CreateUserResponse {
+    User user = 1;
+}
+
+message FindUserRequest {
+    uint64 user_id = 1;
+}
+
+message FindUserResponse {
+    User user = 1;
+}
+
+message VerifyUserRequest {
+    string email = 1;
+    bytes password = 2;
+}
+
+message VerifyUserResponse {
+    User user = 1;
+}
+
+service UserService {
+    rpc CreateUser (CreateUserRequest)
+        returns (CreateUserResponse);
+    rpc FindUser (FindUserRequest)
+        returns (FindUserResponse);
+    rpc VerifyUser (VerifyUserRequest)
+        returns (VerifyUserResponse);
+}

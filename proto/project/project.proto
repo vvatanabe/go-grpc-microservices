@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package project;
+
+option go_package = "github.com/vvatanabe/go-grpc-microservices/proto/project";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+message Project {
+    uint64 id = 1;
+    string name = 2;
+    uint64 user_id = 3;
+    google.protobuf.Timestamp created_at = 4;
+}
+
+message CreateProjectRequest {
+    string name = 1;
+}
+
+message CreateProjectResponse {
+    Project project = 1;
+}
+
+message FindProjectRequest {
+    uint64 project_id = 1;
+}
+
+message FindProjectResponse {
+    Project project = 1;
+}
+
+message FindProjectsResponse {
+    repeated Project projects = 2;
+}
+
+message UpdateProjectRequest {
+    uint64 project_id = 1;
+    string project_name = 2;
+}
+
+message UpdateProjectResponse {
+    Project project = 1;
+}
+
+service ProjectService {
+    rpc CreateProject (CreateProjectRequest)
+        returns (CreateProjectResponse);
+    rpc FindProject (FindProjectRequest)
+        returns (FindProjectResponse);
+    rpc FindProjects (google.protobuf.Empty)
+        returns (FindProjectsResponse);
+    rpc UpdateProject (UpdateProjectRequest)
+        returns (UpdateProjectResponse);
+}

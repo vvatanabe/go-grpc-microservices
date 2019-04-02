@@ -1,0 +1,22 @@
+{{define "header"}}
+<header class="header">
+    <div class="header__main">
+        <h1 class="header__logo"><a href="/">Task Management Tool</a></h1>
+    </div>
+{{if .IsLoggedIn}}
+    <div class="modal-wrapper">
+        <button type="button" class="header__user button button--link" id="userMenuModalTrigger" class="header__user"
+                aria-haspopup="true" aria-expanded="false">{{.UserEmail}}
+        </button>
+        <div id="userMenuModal" class="modal -p-under-trigger" aria-hidden="true">
+            <div class="modal__content">
+                <form action="/logout" method="post">
+                    <input type="submit" class="button button--link" value="Logout">
+                </form>
+            </div>
+            <div class="modal-mask js_modal-mask" tabindex="-1"></div>
+        </div>
+    </div>
+{{end}}
+</header>
+{{end}}

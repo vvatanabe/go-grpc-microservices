@@ -1,0 +1,20 @@
+{{ define "content" }}
+<main class="content -single">
+    <section class="form-fields -signin">
+        <form action="/login" method="post">
+            <div class="field">
+                <label for="mail">Email</label><br>
+                <input type="text" id="mail" class="input-text" name="email">
+            </div>
+            <div class="field">
+                <label for="password">Password</label>
+                <input type="text" id="password" class="input-text" name="password">
+            </div>
+            <div class="button-aria mg-t-20">
+                <input type="submit" class="button button--normal -sz-sm mg-b-10" value="Login"><br>
+                <a href="/signup">Sign up now</a>
+            </div>
+        </form>
+    </section>
+</main>
+{{ end }}
