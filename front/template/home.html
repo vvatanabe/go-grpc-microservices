@@ -15,6 +15,7 @@
         {{range .TaskRows}}
             <li class="task-list-item js_edit-task-trigger" tabindex="0">
                 <input class="task-list-item__task_id" type="hidden" value="{{.ID}}">
+                <input class="task-list-item__task_status" type="hidden" value="{{.Status}}">
                 <span class="task-list-item__project-name">{{.ProjectName}}</span>
                 <span class="task-list-item__task-name">{{.Name}}</span>
                 <span class="task-list-item__status"><span class="pill -type-{{.Status}}">{{.StatusName}}</span></span>
@@ -63,9 +64,9 @@
     <div class="modal__content form-fields">
         <form action="/task" method="post">
             <div class="field">
-                <label for="project">Project</label><br>
+                <label for="add-task-project">Project</label><br>
                 <span class="selectbox-wrapper">
-          <select id="project" class="selectbox" name="project_id">
+          <select id="add-task-project" class="selectbox" name="project_id">
           {{range .Projects}}
               <option value="{{.Id}}">{{.Name}}</option>
           {{end}}
@@ -73,8 +74,8 @@
         </span>
             </div>
             <div class="field">
-                <label for="task-name">Task Name</label><br>
-                <input type="text" id="task-name" class="input-text" name="name">
+                <label for="add-task-name">Task Name</label><br>
+                <input type="text" id="add-task-name" class="input-text" name="name">
             </div>
             <div class="button-aria">
                 <input type="submit" class="button button--normal -sz-sm" id="addTaskModalLabel" value="Create Task">
@@ -92,13 +93,13 @@
     <div class="modal__content form-fields">
         <form method="post" id="editTaskForm">
             <div class="field">
-                <label for="task-name">Task Name</label><br>
-                <input type="text" id="task-name" class="input-text" value="" name="name">
+                <label for="edit-task-name">Task Name</label><br>
+                <input type="text" id="edit-task-name" class="input-text" value="" name="name">
             </div>
             <div class="field">
-                <label for="project">Status</label><br>
+                <label for="edit-task-status">Status</label><br>
                 <span class="selectbox-wrapper">
-              <select id="project" class="selectbox" name="status_id">
+              <select id="edit-task-status" class="selectbox" name="status_id">
                 {{range .TaskStatuses}}}
                 <option value={{.Status}}>{{.StatusName}}</option>
                 {{end}}}
@@ -138,12 +139,12 @@
 <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
 <script type="text/javascript">
     $(function($) {
-        let appMain = $("#appMain");
-        let addTaskModalTrigger = $("#addTaskModalTrigger");
-        let addTaskModal = $("#addTaskModal");
+        const appMain = $("#appMain");
 
-        addTaskModalTrigger.on("click", function (e) {
-            let expanded = addTaskModalTrigger.attr("aria-expanded") === "true";
+        const addTaskModalTrigger = $("#addTaskModalTrigger");
+        const addTaskModal = $("#addTaskModal");
+        addTaskModalTrigger.on("click", function () {
+            const expanded = addTaskModalTrigger.attr("aria-expanded") === "true";
             addTaskModal.attr("aria-hidden", expanded);
             addTaskModalTrigger.attr("aria-expanded", !expanded);
             appMain.attr({"tabindex":"-1","aria-hidden":!expanded});
@@ -152,65 +153,61 @@
             }
         });
 
-        let editTaskModalTrigger = $(".js_edit-task-trigger");
-        let editTaskModal = $("#editTaskModal");
+        const editTaskModalTrigger = $(".js_edit-task-trigger");
+        const editTaskModal = $("#editTaskModal");
         editTaskModalTrigger.keypress(function (e) {
-            var key = e.which;
-            if(key == 13) {
+            if(e.which === 13) {
                 editTaskModal.attr("aria-hidden", "false");
                 appMain.attr({"tabindex":"-1","aria-hidden":"true"});
                 editTaskModal.find("input, select").eq(0).focus();
             }
         });
-        editTaskModalTrigger.on("click", function (e) {
-            if (editTaskModal.attr("aria-hidden") == "false") {
-                editTaskModal.attr("aria-hidden", "true");
-            } else {
-                editTaskModal.attr("aria-hidden", "false");
-                appMain.attr({"tabindex":"-1","aria-hidden":"true"});
+        editTaskModalTrigger.on("click", function () {
+            const hidden = editTaskModal.attr("aria-hidden") === "true";
+            editTaskModal.attr("aria-hidden", !hidden);
+            appMain.attr({"tabindex":"-1","aria-hidden": !hidden});
+            if (hidden) {
+                const taskName = $(this).children(".task-list-item__task-name").text();
+                const taskStatus = $(this).children(".task-list-item__task_status").val();
+                const taskId = $(this).children(".task-list-item__task_id").val();
+                $("#editTaskForm").attr('action', "/task/" + taskId);
+                $("#edit-task-name").val(taskName);
+                $("#edit-task-status").val(taskStatus);
                 editTaskModal.find("input, select").eq(0).focus();
             }
-            var taskId = $(this).children(".task-list-item__task_id").val();
-            $("#editTaskForm").attr('action', "/task/" + taskId);
         });
 
-        var addProjectModalTrigger = $("#addProjectModalTrigger");
-        var addProjectModal = $("#addProjectModal");
-        addProjectModalTrigger.on("click", function (e) {
-            if (addProjectModalTrigger.attr("aria-expanded") == "true") {
-                addProjectModal.attr("aria-hidden", "true");
-                addProjectModalTrigger.attr("aria-expanded", "false")
-            } else {
-                addProjectModal.attr("aria-hidden", "false");
-                addProjectModalTrigger.attr("aria-expanded", "true")
-                appMain.attr({"tabindex":"-1","aria-hidden":"true"});
+        const addProjectModalTrigger = $("#addProjectModalTrigger");
+        const addProjectModal = $("#addProjectModal");
+        addProjectModalTrigger.on("click", function () {
+            const expanded = addProjectModalTrigger.attr("aria-expanded") === "true";
+            addProjectModal.attr("aria-hidden", expanded);
+            addProjectModalTrigger.attr("aria-expanded", !expanded);
+            appMain.attr({"tabindex": "-1", "aria-hidden": !expanded});
+            if (!expanded) {
                 addProjectModal.find("input, select").eq(0).focus();
             }
         });
 
-        var userMenuModalTrigger = $("#userMenuModalTrigger");
-        var userMenuModal = $("#userMenuModal")
-        userMenuModalTrigger.on("click", function (e) {
-            if (userMenuModalTrigger.attr("aria-expanded") == "true") {
-                userMenuModal.attr("aria-hidden", "true");
-                userMenuModalTrigger.attr("aria-expanded", "false")
-            } else {
-                userMenuModal.attr("aria-hidden", "false");
-                appMain.attr({"tabindex":"-1","aria-hidden":"true"});
-                userMenuModalTrigger.attr("aria-expanded", "true")
-            }
+        const userMenuModalTrigger = $("#userMenuModalTrigger");
+        const userMenuModal = $("#userMenuModal");
+        userMenuModalTrigger.on("click", function () {
+            const expanded = userMenuModalTrigger.attr("aria-expanded") === "true";
+            userMenuModal.attr("aria-hidden", expanded);
+            userMenuModalTrigger.attr("aria-expanded", !expanded);
+            appMain.attr({"tabindex":"-1","aria-hidden":!expanded});
         });
 
 
-        $(".js_modal-mask, .js_modal-close").on("click", function (e) {
-            addTaskModal.attr("aria-hidden", "true");
-            addTaskModalTrigger.attr("aria-expanded", "false")
-            editTaskModal.attr("aria-hidden", "true");
-            addProjectModal.attr("aria-hidden", "true");
-            addProjectModalTrigger.attr("aria-expanded", "false")
-            userMenuModal.attr("aria-hidden", "true");
-            userMenuModalTrigger.attr("aria-expanded", "false")
-            appMain.attr({tabindex: "0","aria-hidden":"false"});
+        $(".js_modal-mask, .js_modal-close").on("click", function () {
+            addTaskModal.attr("aria-hidden", true);
+            addTaskModalTrigger.attr("aria-expanded", false);
+            editTaskModal.attr("aria-hidden", true);
+            addProjectModal.attr("aria-hidden", true);
+            addProjectModalTrigger.attr("aria-expanded", false);
+            userMenuModal.attr("aria-hidden", true);
+            userMenuModalTrigger.attr("aria-expanded", false);
+            appMain.attr({tabindex: "0","aria-hidden":false});
         });
     });
 </script>
